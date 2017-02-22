@@ -1,12 +1,32 @@
 from __future__ import print_function
 import argparse
 import os
+import sys
+
+here = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(here, "vendored"))
 
 import boto3
 from botocore.exceptions import ClientError
 import pysftp
 
 tmp_dir = '/tmp'
+
+def handler(event, context):
+    event_record = event['Records'][0]
+    if event_record['eventSource'] == "aws:s3":
+        s3_event = event_record['s3']
+        s3_bucket = s3_event['bucket']['name']
+        s3_key = s3_event['object']['key']
+
+        new_s3_object(s3_bucket, s3_key)
+
+        response = {
+            "statusCode": 200,
+            "body": "Uploaded {}".format(s3_key)
+        }
+
+    return response
 
 def new_s3_object(s3_bucket, s3_key):
     try:

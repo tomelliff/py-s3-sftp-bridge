@@ -2,5 +2,11 @@
 env/
 vendored/
 
+# Compiled packages
+py-cryptography-1.7.2.zip
+
 # Compiled binaries
 *.pyc
+
+# Packaged Lambda function
+s3-sftp-bridge.zip
