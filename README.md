@@ -6,7 +6,7 @@ Heavily inspired by [@Gilt](https://github.com/gilt)'s Node.js implementation of
 
 ---
 
-Note that `pysftp` relies on `Cryptography` which must be compiled on the target platform. As AWS Lambda runs on Amazon Linux then `pip install pysftp` must be ran on an Amazon Linux instance for the packaged dependencies to be valid. Right now I'm just grabbing some pre-compiled binaries from S3 that I built with the following commands:
+Note that [`pysftp`](https://pypi.python.org/pypi/pysftp) relies on [`Cryptography`](https://pypi.python.org/pypi/cryptography) which must be compiled on the target platform. As AWS Lambda runs on Amazon Linux then `pip install pysftp` must be ran on an Amazon Linux instance for the packaged dependencies to be valid. Right now I'm just grabbing some pre-compiled binaries from S3 that I built with the following commands:
 
 ```sh
 sudo yum install python-virtualenv gcc libffi-devel python-devel openssl-devel
