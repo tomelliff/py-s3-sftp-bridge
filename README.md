@@ -43,6 +43,16 @@ make create_deploy_bucket
 make ship
 ```
 
+## SFTP Authentication
+
+Right now the Lambda function only supports public key authentication but could be made to support password based authentication as well.
+
+While a typical 4096 bit RSA key will just about fit inside the (4KB limit)[http://docs.aws.amazon.com/lambda/latest/dg/limits.html#limits-troubleshooting] for AWS Lambda environment variables this leaves it readable in plaintext to anyone with read access to the Lambda function. If the key is instead KMS encrypted and used then, from my limited testing, it now exceeds the 4KB limit.
+
+As such this Lambda function currently expects an SSH private key to be held in an S3 bucket where access can be restricted via IAM/bucket policies and/or KMS encryption.
+
+If it becomes possible to directly support a KMS encrypted private key directly in the AWS Lambda environment variables then I'll try to rework things to do so.
+
 ## Running it locally
 
 ### Local setup/configuration
@@ -94,6 +104,7 @@ python s3-sftp-bridge.py my_bucket/path/to/object
 
 - Write Tests
 - Handle failures - Write event to SQS, non S3 PUT event triggers cause the queue to be polled and messages retried
+- Support password based SFTP authentication
 - SFTP -> S3 transfers - non S3 PUT events poll the SFTP server for completed files and then writes them to S3
 - Cloudformation and/or Terraform to deploy Lambda function and dependencies
   - Create CloudFormation "Launch Stack" buttons (?)
