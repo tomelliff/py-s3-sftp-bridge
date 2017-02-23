@@ -88,5 +88,28 @@ resource "aws_iam_role_policy" "lambda_kms" {
 EOF
 }
 
+resource "aws_iam_role_policy" "lambda_dead_letter_sqs" {
+  role = "${aws_iam_role.lambda_role.id}"
+  name = "sqs"
+
+  policy = <<EOF
+{
+  "Version"  : "2012-10-17",
+  "Statement": [
+    {
+      "Sid"     :   "1",
+      "Effect"  :   "Allow",
+
+      "Action"  : [ "sqs:GetQueueUrl",
+                    "sqs:ReceiveMessage",
+                    "sqs:SendMessage",
+                    "sqs:DeleteMessage" ],
+      "Resource":   "${aws_sqs_queue.dead_letter.arn}"
+    }
+  ]
+}
+EOF
+}
+
 ###################################################################################################
 
