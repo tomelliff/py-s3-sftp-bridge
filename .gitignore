@@ -10,3 +10,7 @@ py-cryptography-1.7.2.zip
 
 # Packaged Lambda function
 s3-sftp-bridge.zip
+
+# Terraform state and modules
+**/terraform.tfstate*
+**/.terraform/*

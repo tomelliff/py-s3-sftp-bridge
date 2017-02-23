@@ -7,6 +7,7 @@ here = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(here, "vendored"))
 
 import boto3
+from botocore.client import Config
 from botocore.exceptions import ClientError
 import pysftp
 
@@ -45,7 +46,7 @@ def _split_s3_path(s3_full_path):
 
 def _download_s3_object(s3_bucket, s3_key):
     try:
-        s3 = boto3.resource('s3')
+        s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
         bucket = s3.Bucket(s3_bucket)
         bucket.download_file(s3_key, '{}/{}'.format(tmp_dir, s3_key))
         print('fetched object {}'.format(s3_key))
