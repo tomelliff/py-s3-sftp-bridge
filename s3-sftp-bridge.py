@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import json
 import os
 import sys
 
@@ -14,9 +15,8 @@ import pysftp
 tmp_dir = '/tmp'
 
 def handler(event, context):
-    event_record = event['Records'][0]
-    if event_record['eventSource'] == "aws:s3":
-        s3_event = event_record['s3']
+    if 'Records' in event and event['Records'][0]['eventSource'] == "aws:s3":
+        s3_event = event['Records'][0]['s3']
         s3_bucket = s3_event['bucket']['name']
         s3_key = s3_event['object']['key']
 
@@ -27,7 +27,10 @@ def handler(event, context):
             "body": "Uploaded {}".format(s3_key)
         }
 
-    return response
+        return response
+
+    else:
+        retry_failed_messages()
 
 def new_s3_object(s3_bucket, s3_key):
     try:
@@ -35,7 +38,6 @@ def new_s3_object(s3_bucket, s3_key):
         _upload_file(s3_key)
     except BaseException:
         print('failed to transfer file')
-        _handle_failures(s3_bucket, s3_key)
         raise
 
 def _split_s3_path(s3_full_path):
@@ -89,10 +91,16 @@ def _upload_file(file_path):
         print('failed to upload file')
         raise
 
-def _handle_failures(s3_bucket, s3_key):
-    # TODO: Put event onto SQS queue to be retried later?
-    print('handling failure')
-    pass
+def retry_failed_messages():
+    print('retrying failed messages')
+    queue_name = os.environ['QUEUE_NAME']
+
+    sqs = boto3.resource('sqs')
+    queue = sqs.get_queue_by_name(QueueName=queue_name)
+
+    for message in queue.receive_messages(MaxNumberOfMessages=10):
+        handler(json.loads(message.body), 'context')
+        message.delete()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
