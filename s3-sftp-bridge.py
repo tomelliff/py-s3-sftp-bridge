@@ -37,7 +37,7 @@ def new_s3_object(s3_bucket, s3_key):
         _download_s3_object(s3_bucket, s3_key)
         _upload_file(s3_key)
     except BaseException:
-        print('failed to transfer file')
+        print('failed to transfer {}'.format(s3_key))
         raise
 
 def _split_s3_path(s3_full_path):
@@ -53,7 +53,7 @@ def _download_s3_object(s3_bucket, s3_key):
         bucket.download_file(s3_key, '{}/{}'.format(tmp_dir, s3_key))
         print('fetched object {}'.format(s3_key))
     except ClientError:
-        print('object not found')
+        print('{} not found in {}'.format(s3_key, s3_bucket))
         raise
 
 
@@ -88,7 +88,7 @@ def _upload_file(file_path):
         raise
 
     except IOError:
-        print('failed to upload file')
+        print('failed to upload {}'.format(file_path))
         raise
 
 def retry_failed_messages():
