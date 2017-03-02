@@ -1,13 +1,17 @@
 ###################################################################################################
 
+variable "aws_account_id" {}
+
+###################################################################################################
+
 variable "s3_keys_versioning" {
   default = "true"
 }
 
 ###################################################################################################
 
-resource "aws_s3_bucket" "sftp_keys" {
-  bucket = "${var.function_prefix}-sftp-keys-${var.integration_name}-${var.aws_account_id}"
+resource "aws_s3_bucket" "ssh_keys" {
+  bucket = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}"
 
   policy = <<EOF
 {
@@ -19,22 +23,10 @@ resource "aws_s3_bucket" "sftp_keys" {
       "Effect": "Deny",
       "Principal": "*",
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::${var.function_prefix}-sftp-keys-${var.integration_name}-${var.aws_account_id}/*",
+      "Resource": "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}/*",
       "Condition": {
         "StringNotEquals": {
           "s3:x-amz-server-side-encryption": "aws:kms"
-        }
-      }
-    },
-    {
-      "Sid":"DenyUnEncryptedObjectUploads",
-      "Effect":"Deny",
-      "Principal":"*",
-      "Action":"s3:PutObject",
-      "Resource":"arn:aws:s3:::${var.function_prefix}-sftp-keys-${var.integration_name}-${var.aws_account_id}/*",
-      "Condition":{
-        "StringNotEquals":{
-          "s3:x-amz-server-side-encryption-aws-kms-key-id":"${aws_kms_key.configuration_key.arn}"
         }
       }
     }
@@ -47,15 +39,14 @@ EOF
   }
 
   tags {
-    Name = "${var.function_prefix}-sftp-keys-${var.integration_name}-${var.aws_account_id}"
+    Name = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}"
   }
 }
 
 ###################################################################################################
 
 output "sftp_keys_bucket" {
-  value = "${aws_s3_bucket.sftp_keys.bucket}"
+  value = "${aws_s3_bucket.ssh_keys.bucket}"
 }
 
 ###################################################################################################
-

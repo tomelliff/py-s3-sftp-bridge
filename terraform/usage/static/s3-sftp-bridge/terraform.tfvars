@@ -1,13 +1,17 @@
 ###################################################################################################
 
-integration_name = "tom-test-py"
+integration_name = "example"
 
 ###################################################################################################
 
-sftp_host       = "prepb2bgwln.jdadelivers.com"
-sftp_port       = "22"
-sftp_user       = "wickinlndev"
-sftp_location   = "inbox"
-sftp_s3_ssh_key = "wick-intgr-dev_rsa"
+ssh_key_path = "path/to/secrets"
+ssh_key_file = "mykey.pem"
+
+###################################################################################################
+
+sftp_host       = "sftp.example.com"
+sftp_port       = "2222"
+sftp_user       = "user"
+sftp_location   = "share"
 
 ###################################################################################################

@@ -31,15 +31,14 @@ resource "aws_iam_role_policy" "lambda_s3_access" {
     {
       "Sid"     :   "1",
       "Effect"  :   "Allow",
-
       "Action"  : [ "s3:CopyObject",
                     "s3:GetObject",
                     "s3:ListObjects",
                     "s3:PutObject" ],
       "Resource": [ "arn:aws:s3:::${aws_s3_bucket.event_bucket.bucket}",
                     "arn:aws:s3:::${aws_s3_bucket.event_bucket.bucket}/*",
-                    "arn:aws:s3:::${aws_s3_bucket.sftp_keys.bucket}",
-                    "arn:aws:s3:::${aws_s3_bucket.sftp_keys.bucket}/*" ]
+                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}",
+                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}/*" ]
     }
   ]
 }
@@ -57,7 +56,6 @@ resource "aws_iam_role_policy" "lambda_logging" {
     {
       "Sid"     :   "1",
       "Effect"  :   "Allow",
-
       "Action"  : [ "logs:CreateLogGroup",
                     "logs:CreateLogStream",
                     "logs:PutLogEvents" ],
@@ -79,7 +77,6 @@ resource "aws_iam_role_policy" "lambda_kms" {
     {
       "Sid"     :   "1",
       "Effect"  :   "Allow",
-
       "Action"  :   "kms:Decrypt",
       "Resource":   "${aws_kms_key.configuration_key.arn}"
     }
@@ -99,7 +96,6 @@ resource "aws_iam_role_policy" "lambda_dead_letter_sqs" {
     {
       "Sid"     :   "1",
       "Effect"  :   "Allow",
-
       "Action"  : [ "sqs:GetQueueUrl",
                     "sqs:ReceiveMessage",
                     "sqs:SendMessage",
@@ -112,4 +108,3 @@ EOF
 }
 
 ###################################################################################################
-

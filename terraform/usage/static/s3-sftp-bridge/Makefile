@@ -24,8 +24,3 @@ apply: get remote
 
 destroy: get remote
 	terraform destroy -input=false -force
-
-upload_ssh_key:
-	kms_key_id=`terraform output kms_key_id`; \
-	sftp_keys_bucket=`terraform output sftp_keys_bucket`; \
-	aws s3 cp $(SSH_KEY_PATH) s3://$${sftp_keys_bucket} --sse aws:kms --sse-kms-key-id $${kms_key_id}
