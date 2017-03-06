@@ -37,7 +37,7 @@ def new_s3_object(s3_bucket, s3_key):
         _download_s3_object(s3_bucket, s3_key)
         _upload_file(s3_key)
     except BaseException:
-        print('failed to transfer {}'.format(s3_key))
+        print('Failed to transfer {}'.format(s3_key))
         raise
 
 def _split_s3_path(s3_full_path):
@@ -47,13 +47,20 @@ def _split_s3_path(s3_full_path):
     return (bucket, key_path)
 
 def _download_s3_object(s3_bucket, s3_key):
+    os.makedirs('{}/{}'.format(tmp_dir, os.path.dirname(s3_key)))
+
     try:
         s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
         bucket = s3.Bucket(s3_bucket)
         bucket.download_file(s3_key, '{}/{}'.format(tmp_dir, s3_key))
         print('fetched object {}'.format(s3_key))
+
     except ClientError:
         print('{} not found in {}'.format(s3_key, s3_bucket))
+        raise
+
+    except IOError:
+        print('Unable to download {}'.format(s3_key))
         raise
 
 
@@ -84,15 +91,15 @@ def _upload_file(file_path):
 
     except (pysftp.ConnectionException, pysftp.CredentialException,
             pysftp.SSHException, pysftp.AuthenticationException):
-        print('connection error')
+        print('SFTP connection error')
         raise
 
     except IOError:
-        print('failed to upload {}'.format(file_path))
+        print('Failed to upload {}'.format(file_path))
         raise
 
 def retry_failed_messages():
-    print('retrying failed messages')
+    print('Retrying failed messages')
     queue_name = os.environ['QUEUE_NAME']
 
     sqs = boto3.resource('sqs')

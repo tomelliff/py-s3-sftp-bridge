@@ -16,7 +16,7 @@ resource "aws_lambda_function" "s3_sftp_bridge_lambda" {
       SFTP_PORT       = "${var.sftp_port}"
       SFTP_USER       = "${var.sftp_user}"
       SFTP_LOCATION   = "${var.sftp_location}"
-      SFTP_S3_SSH_KEY = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}/${var.ssh_key_file}"
+      SFTP_S3_SSH_KEY = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}/${var.integration_name}/${var.ssh_key_file}"
     }
   }
 }
