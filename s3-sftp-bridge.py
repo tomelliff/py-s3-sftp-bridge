@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import errno
 import json
 import os
 import sys
@@ -47,7 +48,14 @@ def _split_s3_path(s3_full_path):
     return (bucket, key_path)
 
 def _download_s3_object(s3_bucket, s3_key):
-    os.makedirs('{}/{}'.format(tmp_dir, os.path.dirname(s3_key)))
+    local_object_dir = '{}/{}'.format(tmp_dir, os.path.dirname(s3_key))
+    try:
+        os.makedirs(local_object_dir)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(local_object_dir):
+            pass
+        else:
+            raise
 
     try:
         s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
