@@ -97,7 +97,7 @@ pip install -r requirements.txt
 ### Run it
 
 ```sh
-python s3-sftp-bridge.py my_bucket/path/to/object
+python s3_sftp_bridge.py my_bucket/path/to/object
 ```
 
 ## TODO

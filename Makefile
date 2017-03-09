@@ -1,4 +1,4 @@
-SOURCES=s3-sftp-bridge.py
+SOURCES=s3_sftp_bridge.py
 DEPENDENCIES=requirements.txt
 COMPILED_DEPENDENCIES=py-cryptography-1.7.2.zip
 VENDORED_FOLDER=vendored
