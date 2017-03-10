@@ -46,10 +46,35 @@ class TestHandler(unittest.TestCase):
   ]
 }""")
 
+    # Taken from Lambda's test scheuled event
+    scheduled_event = json.loads("""{
+  "account": "123456789012",
+  "region": "us-east-1",
+  "detail": {},
+  "detail-type": "Scheduled Event",
+  "source": "aws.events",
+  "time": "1970-01-01T00:00:00Z",
+  "id": "cdc73f9d-aea9-11e3-9d5a-835b769c0d9c",
+  "resources": [
+    "arn:aws:events:us-east-1:123456789012:rule/my-schedule"
+  ]
+}""")
+
     @patch('s3_sftp_bridge.new_s3_object')
     def test_handler_accepts_s3_put_event(self, mock_new_object):
         s3_sftp_bridge.handler(self.s3_put_event, 'context')
         mock_new_object.assert_called_once_with('sourcebucket', 'HappyFace.jpg')
+
+    @patch('s3_sftp_bridge.retry_failed_messages')
+    def test_handler_retries_failed_on_non_s3_put_events(self, mock_retry):
+        s3_sftp_bridge.handler(self.scheduled_event, 'context')
+        mock_retry.assert_called_once_with()
+
+    @patch('s3_sftp_bridge.new_s3_object')
+    def test_handler_returns_200_response(self, mock_new_object):
+        response = s3_sftp_bridge.handler(self.s3_put_event, 'context')
+        self.assertEqual(response['statusCode'], 200)
+        self.assertEqual(response['body'], 'Uploaded HappyFace.jpg')
 
 
 if __name__ == '__main__':

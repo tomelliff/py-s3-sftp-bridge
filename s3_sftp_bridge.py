@@ -37,7 +37,7 @@ def new_s3_object(s3_bucket, s3_key):
     try:
         _download_s3_object(s3_bucket, s3_key)
         _upload_file(s3_key)
-    except BaseException:
+    except Exception:
         print('Failed to transfer {}'.format(s3_key))
         raise
 
