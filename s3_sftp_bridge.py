@@ -13,7 +13,8 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 import pysftp
 
-tmp_dir = '/tmp'
+TMP_DIR = '/tmp'
+
 
 def handler(event, context):
     if 'Records' in event and event['Records'][0]['eventSource'] == "aws:s3":
@@ -33,6 +34,7 @@ def handler(event, context):
     else:
         retry_failed_messages()
 
+
 def new_s3_object(s3_bucket, s3_key):
     try:
         _download_s3_object(s3_bucket, s3_key)
@@ -41,14 +43,16 @@ def new_s3_object(s3_bucket, s3_key):
         print('Failed to transfer {}'.format(s3_key))
         raise
 
+
 def _split_s3_path(s3_full_path):
     bucket = s3_full_path.split('/')[0]
     key_path = '/'.join(s3_full_path.split('/')[1:])
 
     return (bucket, key_path)
 
+
 def _download_s3_object(s3_bucket, s3_key):
-    local_object_dir = '{}/{}'.format(tmp_dir, os.path.dirname(s3_key))
+    local_object_dir = '{}/{}'.format(TMP_DIR, os.path.dirname(s3_key))
     try:
         os.makedirs(local_object_dir)
     except OSError as e:
@@ -60,7 +64,7 @@ def _download_s3_object(s3_bucket, s3_key):
     try:
         s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
         bucket = s3.Bucket(s3_bucket)
-        bucket.download_file(s3_key, '{}/{}'.format(tmp_dir, s3_key))
+        bucket.download_file(s3_key, '{}/{}'.format(TMP_DIR, s3_key))
         print('fetched object {}'.format(s3_key))
 
     except ClientError:
@@ -79,10 +83,10 @@ def _upload_file(file_path):
     s3_private_key = os.environ['SFTP_S3_SSH_KEY']
     sftp_location = os.environ['SFTP_LOCATION']
 
-    s3_ssh_key_bucket, s3_ssh_key_path =_split_s3_path(s3_private_key)
+    s3_ssh_key_bucket, s3_ssh_key_path = _split_s3_path(s3_private_key)
 
     _download_s3_object(s3_ssh_key_bucket, s3_ssh_key_path)
-    private_key = '{}/{}'.format(tmp_dir, s3_ssh_key_path)
+    private_key = '{}/{}'.format(TMP_DIR, s3_ssh_key_path)
 
     cnopts = pysftp.CnOpts()
     cnopts.hostkeys = None
@@ -106,6 +110,7 @@ def _upload_file(file_path):
         print('Failed to upload {}'.format(file_path))
         raise
 
+
 def retry_failed_messages():
     print('Retrying failed messages')
     queue_name = os.environ['QUEUE_NAME']
@@ -117,10 +122,11 @@ def retry_failed_messages():
         handler(json.loads(message.body), 'context')
         message.delete()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                         description='Move a file from S3 to an SFTP server')
-    parser.add_argument('s3_path', help='The full path to the s3 object.\n' \
+    parser.add_argument('s3_path', help='The full path to the s3 object. '
                         'eg. my_bucket/path/to/key')
     args = parser.parse_args()
 

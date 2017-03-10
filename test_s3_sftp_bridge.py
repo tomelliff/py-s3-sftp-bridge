@@ -1,9 +1,10 @@
 import json
 import unittest
 
-from mock import patch, mock_open
+from mock import patch
 
 import s3_sftp_bridge
+
 
 class TestHandler(unittest.TestCase):
     # Taken from Lambda's test S3 PUT event
