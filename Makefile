@@ -19,6 +19,7 @@ build: test $(PACKAGE_NAME)
 
 test:
 	python -m unittest discover
+	flake8 --exclude .git,*.pyc,env,vendored,terraform
 
 create_deploy_bucket:
 	region_constraints='--region $(AWS_DEFAULT_REGION) --create-bucket-configuration LocationConstraint=$(AWS_DEFAULT_REGION)'; \

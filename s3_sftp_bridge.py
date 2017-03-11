@@ -5,13 +5,15 @@ import json
 import os
 import sys
 
-here = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(here, "vendored"))
-
 import boto3
 from botocore.client import Config
 from botocore.exceptions import ClientError
-import pysftp
+
+# We need to package pysftp with the Lambda function so add it to path
+here = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(here, "vendored"))
+
+import pysftp  # noqa: E402
 
 TMP_DIR = '/tmp'
 

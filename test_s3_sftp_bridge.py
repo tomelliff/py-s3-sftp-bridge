@@ -1,3 +1,4 @@
+# flake8: noqa
 import json
 import unittest
 
@@ -64,7 +65,8 @@ class TestHandler(unittest.TestCase):
     @patch('s3_sftp_bridge.new_s3_object')
     def test_handler_accepts_s3_put_event(self, mock_new_object):
         s3_sftp_bridge.handler(self.s3_put_event, 'context')
-        mock_new_object.assert_called_once_with('sourcebucket', 'HappyFace.jpg')
+        mock_new_object.assert_called_once_with('sourcebucket',
+                                                'HappyFace.jpg')
 
     @patch('s3_sftp_bridge.retry_failed_messages')
     def test_handler_retries_failed_on_non_s3_put_events(self, mock_retry):
@@ -76,6 +78,18 @@ class TestHandler(unittest.TestCase):
         response = s3_sftp_bridge.handler(self.s3_put_event, 'context')
         self.assertEqual(response['statusCode'], 200)
         self.assertEqual(response['body'], 'Uploaded HappyFace.jpg')
+
+
+@patch('s3_sftp_bridge._download_s3_object')
+@patch('s3_sftp_bridge._upload_file')
+class TestNewS3Object(unittest.TestCase):
+    def test_download_s3_object_is_called(self, mock_upload, mock_download):
+        s3_sftp_bridge.new_s3_object('s3_bucket', 's3_key')
+        mock_download.assert_called_once_with('s3_bucket', 's3_key')
+
+    def test_upload_s3_object_is_called(self, mock_upload, mock_download):
+        s3_sftp_bridge.new_s3_object('s3_bucket', 's3_key')
+        mock_upload.assert_called_once_with('s3_key')
 
 
 if __name__ == '__main__':
