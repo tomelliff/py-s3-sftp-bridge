@@ -92,5 +92,13 @@ class TestNewS3Object(unittest.TestCase):
         mock_upload.assert_called_once_with('s3_key')
 
 
+class TestSplitS3Path(unittest.TestCase):
+    def test_returns_bucket_name_and_key_path(self):
+        bucket, key_path = s3_sftp_bridge._split_s3_path(
+                                'my_bucket/path/to/key')
+        self.assertEqual(bucket, 'my_bucket')
+        self.assertEqual(key_path, 'path/to/key')
+
+
 if __name__ == '__main__':
     unittest.main()
