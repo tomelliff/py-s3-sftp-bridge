@@ -1,4 +1,5 @@
 # flake8: noqa
+import errno
 import json
 import unittest
 
@@ -98,6 +99,19 @@ class TestSplitS3Path(unittest.TestCase):
                                 'my_bucket/path/to/key')
         self.assertEqual(bucket, 'my_bucket')
         self.assertEqual(key_path, 'path/to/key')
+
+
+@patch('os.makedirs')
+class TestCreateLocalTmpDirs(unittest.TestCase):
+    def test_local_tmp_dir_creates_if_not_exists(self, mock_makedirs):
+        s3_sftp_bridge._create_local_tmp_dirs('/full/path/to/dir')
+        mock_makedirs.assert_called_once_with('/full/path/to/dir')
+
+    @patch('os.path.isdir', return_value=True)
+    def test_ignores_error_if_already_exists(self, mock_isdir, mock_makedirs):
+        mock_makedirs.side_effect = OSError(errno.EEXIST, 'message')
+        s3_sftp_bridge._create_local_tmp_dirs('/full/path/to/existing/dir')
+        mock_makedirs.assert_called_once_with('/full/path/to/existing/dir')
 
 
 if __name__ == '__main__':

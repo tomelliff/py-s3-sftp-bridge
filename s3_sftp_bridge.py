@@ -53,15 +53,19 @@ def _split_s3_path(s3_full_path):
     return (bucket, key_path)
 
 
-def _download_s3_object(s3_bucket, s3_key):
-    local_object_dir = '{}/{}'.format(TMP_DIR, os.path.dirname(s3_key))
+def _create_local_tmp_dirs(path):
     try:
-        os.makedirs(local_object_dir)
+        os.makedirs(path)
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(local_object_dir):
+        if e.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else:
             raise
+
+
+def _download_s3_object(s3_bucket, s3_key):
+    local_object_dir = '{}/{}'.format(TMP_DIR, os.path.dirname(s3_key))
+    _create_local_tmp_dirs(local_object_dir)
 
     try:
         s3 = boto3.resource('s3', config=Config(signature_version='s3v4'))
