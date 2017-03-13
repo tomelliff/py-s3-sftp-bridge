@@ -12,6 +12,7 @@ resource "aws_lambda_function" "s3_sftp_bridge_lambda" {
 
   environment {
     variables = {
+      QUEUE_NAME      = "${aws_sqs_queue.dead_letter.name}"
       SFTP_HOST       = "${var.sftp_host}"
       SFTP_PORT       = "${var.sftp_port}"
       SFTP_USER       = "${var.sftp_user}"
