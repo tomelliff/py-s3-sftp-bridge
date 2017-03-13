@@ -34,3 +34,13 @@ variable "sftp_port" {
 }
 
 ###################################################################################################
+
+variable "retry_schedule_expression" {
+  default = "cron(0/5 * * * ? *)"
+}
+
+variable "retry_scheduled_event_description" {
+  default = "Managed by Terraform"
+}
+
+###################################################################################################
