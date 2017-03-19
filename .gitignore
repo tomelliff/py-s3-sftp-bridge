@@ -8,6 +8,9 @@ py-cryptography-1.7.2.zip
 # Compiled binaries
 *.pyc
 
+# Unit test / coverage reports
+.coverage
+
 # Packaged Lambda function
 s3-sftp-bridge.zip
 
