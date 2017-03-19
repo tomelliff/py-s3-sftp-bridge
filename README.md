@@ -1,5 +1,8 @@
 # S3 SFTP Bridge
 
+[![Build Status](https://travis-ci.org/tomelliff/py-s3-sftp-bridge.svg?branch=master)](https://travis-ci.org/tomelliff/py-s3-sftp-bridge)
+[![Coverage Status](https://coveralls.io/repos/github/tomelliff/py-s3-sftp-bridge/badge.svg?branch=master)](https://coveralls.io/github/tomelliff/py-s3-sftp-bridge?branch=master)
+
 A Python Lambda function that syncs files between Amazon S3 and external FTP servers. For S3 => SFTP, it will automatically sync when objects are uploaded to S3.
 
 Heavily inspired by [@Gilt](https://github.com/gilt)'s Node.js implementation of [s3-sftp-bridge](https://github.com/gilt/s3-sftp-bridge)
