@@ -3,9 +3,15 @@
 [![Build Status](https://travis-ci.org/tomelliff/py-s3-sftp-bridge.svg?branch=master)](https://travis-ci.org/tomelliff/py-s3-sftp-bridge)
 [![Coverage Status](https://coveralls.io/repos/github/tomelliff/py-s3-sftp-bridge/badge.svg?branch=master)](https://coveralls.io/github/tomelliff/py-s3-sftp-bridge?branch=master)
 
-A Python Lambda function that syncs files between Amazon S3 and external FTP servers. For S3 => SFTP, it will automatically sync when objects are uploaded to S3.
+A Python Lambda function that syncs files between Amazon S3 and external SFTP servers. As objects are uploaded to S3 they will be automatically copied to an SFTP server.
+
+In the event of failure such as connecting to the SFTP server AWS Lambda will automatically retry twice and then move on to the configurable dead letter handling. If this is configured to use an SQS queue (provided by the Terraform module) then a non S3 PUT event trigger of the Lambda function will then attempt to pull failed events from the configured SQS queue (provided by the `QUEUE_NAME` environment variable).
+
+---
 
 Heavily inspired by [@Gilt](https://github.com/gilt)'s Node.js implementation of [s3-sftp-bridge](https://github.com/gilt/s3-sftp-bridge)
+
+This implementation mostly differs from Gilt's in that it takes a deliberate decision that each separate integration should be deployed as a separate Lambda function (and all the surrounding stuff such as the event bucket, SQS queue for dead letter handling, scheduled event etc). This simplifies the deployment model greatly and sticks to on of my key principles of decentralisation over shared services.
 
 ---
 
@@ -103,11 +109,20 @@ pip install -r requirements.txt
 python s3_sftp_bridge.py my_bucket/path/to/object
 ```
 
+## Deploying
+
+### Terraform
+
+This repo provides a [Terraform module](https://github.com/tomelliff/py-s3-sftp-bridge/tree/master/terraform/modules) that will deploy and configure the Lambda function and supporting infrastructure.
+
+There is a small example of how to use the Terraform module under [`terraform/usage/static/`](https://github.com/tomelliff/py-s3-sftp-bridge/tree/master/terraform/usage/static).
+
 ## TODO
 
-- Write Tests
-- Handle failures - Write event to SQS, non S3 PUT event triggers cause the queue to be polled and messages retried
+- Write more tests (coverage shown by Coveralls.io)
+- Support automatic DLQ handling in [Terraform 0.9](https://github.com/hashicorp/terraform/pull/12188)
+- Use Amazon Linux Docker container to build the Lambda package and avoid having to pull Cryptography from S3
 - Support password based SFTP authentication
-- SFTP -> S3 transfers - non S3 PUT events poll the SFTP server for completed files and then writes them to S3
-- Cloudformation and/or Terraform to deploy Lambda function and dependencies
+- SFTP -> S3 transfers - non S3 PUT events poll the SFTP server for completed files and then writes them to S3 (separate project/repo?)
+- Cloudformation to deploy Lambda function and dependencies
   - Create CloudFormation "Launch Stack" buttons (?)
