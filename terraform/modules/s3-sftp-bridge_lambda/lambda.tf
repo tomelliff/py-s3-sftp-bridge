@@ -6,7 +6,7 @@ resource "aws_lambda_function" "s3_sftp_bridge_lambda" {
   description      = "${var.lambda_description}"
   runtime          = "python2.7"
   role             = "${aws_iam_role.lambda_role.arn}"
-  handler          = "s3-sftp-bridge.handler"
+  handler          = "s3_sftp_bridge.handler"
   source_code_hash = "${base64sha256(file("${var.lambda_function_package_path}"))}"
   timeout          = 60
 
