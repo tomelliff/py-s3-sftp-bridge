@@ -1,10 +1,10 @@
 ###################################################################################################
 
 resource "aws_s3_bucket" "event_bucket" {
-  bucket = "${var.function_prefix}-${var.integration_name}-${var.aws_account_id}"
+  bucket = "${var.function_prefix}-${var.integration_name}-${data.aws_caller_identity.current.account_id}"
 
   tags {
-    Name        = "${var.function_prefix}-${var.integration_name}-${var.aws_account_id}"
+    Name        = "${var.function_prefix}-${var.integration_name}-${data.aws_caller_identity.current.account_id}"
     Integration = "${var.integration_name}"
   }
 }

@@ -37,8 +37,8 @@ resource "aws_iam_role_policy" "lambda_s3_access" {
                     "s3:PutObject" ],
       "Resource": [ "arn:aws:s3:::${aws_s3_bucket.event_bucket.bucket}",
                     "arn:aws:s3:::${aws_s3_bucket.event_bucket.bucket}/*",
-                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}",
-                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}/*" ]
+                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${data.aws_caller_identity.current.account_id}",
+                    "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${data.aws_caller_identity.current.account_id}/*" ]
     }
   ]
 }

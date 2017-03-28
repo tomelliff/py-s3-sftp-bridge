@@ -1,9 +1,5 @@
 ###################################################################################################
 
-variable "aws_account_id" {}
-
-###################################################################################################
-
 variable "s3_keys_versioning" {
   default = "true"
 }
@@ -11,7 +7,7 @@ variable "s3_keys_versioning" {
 ###################################################################################################
 
 resource "aws_s3_bucket" "ssh_keys" {
-  bucket = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}"
+  bucket = "s3-sftp-bridge-ssh-keys-${data.aws_caller_identity.current.account_id}"
 
   policy = <<EOF
 {
@@ -23,7 +19,7 @@ resource "aws_s3_bucket" "ssh_keys" {
       "Effect": "Deny",
       "Principal": "*",
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${var.aws_account_id}/*",
+      "Resource": "arn:aws:s3:::s3-sftp-bridge-ssh-keys-${data.aws_caller_identity.current.account_id}/*",
       "Condition": {
         "StringNotEquals": {
           "s3:x-amz-server-side-encryption": "aws:kms"
@@ -39,7 +35,7 @@ EOF
   }
 
   tags {
-    Name = "s3-sftp-bridge-ssh-keys-${var.aws_account_id}"
+    Name = "s3-sftp-bridge-ssh-keys-${data.aws_caller_identity.current.account_id}"
   }
 }
 
