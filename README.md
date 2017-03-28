@@ -117,6 +117,18 @@ This repo provides a [Terraform module](https://github.com/tomelliff/py-s3-sftp-
 
 There is a small example of how to use the Terraform module under [`terraform/usage/static/`](https://github.com/tomelliff/py-s3-sftp-bridge/tree/master/terraform/usage/static).
 
+#### Module versioning
+
+As with the example mentioned above, it is strongly recommended to source the module using a refspec to point to a release branch or specific commit:
+
+```hcl
+module "s3-sftp-bridge" {
+  source = github.com/tomelliff/py-s3-sftp-bridge//terraform/modules/s3-sftp-bridge_lambda?ref=terraform-v1"
+  ...
+```
+
+The intention is that
+
 ## TODO
 
 - Write more tests (coverage shown by Coveralls.io)
