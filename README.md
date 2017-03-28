@@ -127,7 +127,9 @@ module "s3-sftp-bridge" {
   ...
 ```
 
-The intention is that
+The intention is that if breaking changes are made to the Terraform module then I will then create a new versioned branch and merge those changes into that, leaving the old versioned branch as is much like with API versioning.
+
+You are of course welcome to source it directly but don't get too upset if I break the module in some way (such as the most recent change to no longer require/allow the AWS account Id to be passed in).
 
 ## TODO
 
