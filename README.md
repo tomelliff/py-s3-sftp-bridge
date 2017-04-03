@@ -11,35 +11,27 @@ In the event of failure such as connecting to the SFTP server AWS Lambda will au
 
 Heavily inspired by [@Gilt](https://github.com/gilt)'s Node.js implementation of [s3-sftp-bridge](https://github.com/gilt/s3-sftp-bridge)
 
-This implementation mostly differs from Gilt's in that it takes a deliberate decision that each separate integration should be deployed as a separate Lambda function (and all the surrounding stuff such as the event bucket, SQS queue for dead letter handling, scheduled event etc). This simplifies the deployment model greatly and sticks to on of my key principles of decentralisation over shared services.
+This implementation mostly differs from Gilt's in that it takes a deliberate decision that each separate integration should be deployed as a separate Lambda function (and all the surrounding stuff such as the event bucket, SQS queue for dead letter handling, scheduled event etc). This simplifies the deployment model greatly and sticks to one of my key principles of decentralisation over shared services.
 
 ---
 
-Note that [`pysftp`](https://pypi.python.org/pypi/pysftp) relies on [`Cryptography`](https://pypi.python.org/pypi/cryptography) which must be compiled on the target platform. As AWS Lambda runs on Amazon Linux then `pip install pysftp` must be ran on an Amazon Linux instance for the packaged dependencies to be valid. Right now I'm just grabbing some pre-compiled binaries from S3 that I built with the following commands:
+Note that [`pysftp`](https://pypi.python.org/pypi/pysftp) relies on [`Cryptography`](https://pypi.python.org/pypi/cryptography) which must be compiled on the target platform. As AWS Lambda runs on Amazon Linux, `pip install pysftp` must be ran on an Amazon Linux instance for the packaged dependencies to be valid.
 
-```sh
-sudo yum install python-virtualenv gcc libffi-devel python-devel openssl-devel
-virtualenv env
-. env/bin/activate
-pip install cryptography
-cd env/lib/python2.7/site-packages/
-zip -r9 ../../../../py-cryptography-1.7.2.zip *
-cd -
-cd env/lib64/python2.7/site-packages/
-zip -r9 ../../../../py-cryptography-1.7.2.zip *
-```
+To get around this the `docker` Make target will run tests locally and then spin up an Amazon Linux Docker container, install any dependencies and then execute the `build` Make target, creating the packaged zip file in the project root directory.
 
 ---
 
 ## Requirements
 
 * Python 2.7
+* [pip](https://pypi.python.org/pypi/pip)
+* Docker (for building an Amazon Linux compatible Lambda package)
 
 ## Building it
 
-### Just build the Lambda zip
+### Build the Lambda zip with Amazon Linux compiled dependencies
 ```sh
-make build
+sudo make docker
 ```
 
 ### Create an S3 bucket to store the Lambda function
@@ -135,7 +127,6 @@ You are of course welcome to source it directly but don't get too upset if I bre
 
 - Write more tests (coverage shown by Coveralls.io)
 - Support automatic DLQ handling in [Terraform 0.9](https://github.com/hashicorp/terraform/pull/12188)
-- Use Amazon Linux Docker container to build the Lambda package and avoid having to pull Cryptography from S3
 - Support password based SFTP authentication
 - SFTP -> S3 transfers - non S3 PUT events poll the SFTP server for completed files and then writes them to S3 (separate project/repo?)
 - Cloudformation to deploy Lambda function and dependencies
