@@ -25,6 +25,7 @@ To get around this the `docker` Make target will run tests locally and then spin
 
 * Python 2.7
 * [pip](https://pypi.python.org/pypi/pip)
+* [virtualenv](https://pypi.python.org/pypi/virtualenv)
 * Docker (for building an Amazon Linux compatible Lambda package)
 
 ## Building it
@@ -126,7 +127,6 @@ You are of course welcome to source it directly but don't get too upset if I bre
 ## TODO
 
 - Write more tests (coverage shown by Coveralls.io)
-- Support automatic DLQ handling in [Terraform 0.9](https://github.com/hashicorp/terraform/pull/12188)
 - Support password based SFTP authentication
 - SFTP -> S3 transfers - non S3 PUT events poll the SFTP server for completed files and then writes them to S3 (separate project/repo?)
 - Cloudformation to deploy Lambda function and dependencies

@@ -10,6 +10,10 @@ resource "aws_lambda_function" "s3_sftp_bridge_lambda" {
   source_code_hash = "${base64sha256(file("${var.lambda_function_package_path}"))}"
   timeout          = 60
 
+  dead_letter_config {
+    target_arn = "${aws_sqs_queue.dead_letter.arn}"
+  }
+
   environment {
     variables = {
       QUEUE_NAME      = "${aws_sqs_queue.dead_letter.name}"
